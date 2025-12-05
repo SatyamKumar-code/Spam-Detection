@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Spam Detection</title>
+    <style>
+      body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0d0d1f, #1a1a3d);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Neon glowing orbs */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(255, 0, 255, 0.3), transparent 60%),
+                        radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.3), transparent 60%),
+                        radial-gradient(circle at 50% 80%, rgba(255, 255, 0, 0.2), transparent 70%);
+            animation: neonGlow 10s ease-in-out infinite;
+            z-index: -3;
+        }
+
+        /* Starry particle layer */
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+           
+            /* background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.5)"/></svg>') repeat; */
+            animation: starTwinkle 20s linear infinite;
+            opacity: 0.6;
+            z-index: -2;
+        }
+
+        /* Canvas for parallax particles */
+        #particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        @keyframes neonGlow {
+            0%, 100% {
+                opacity: 0.5;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.15);
+            }
+        }
+
+        @keyframes starTwinkle {
+            0% {
+                background-position: 0 0;
+                opacity: 0.6;
+            }
+            100% {
+                background-position: 100px 100px;
+                opacity: 0.8;
+            }
+        }
+
+        .container {
+            background: rgba(20, 20, 40, 0.9);
+            padding: 20px 30px;
+            border-radius: 15px;
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.7), 0 0 40px rgba(0, 255, 255, 0.5);
+            text-align: center;
+            width: 400px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .emails-container {
+            background: rgba(20, 20, 40, 0.9);
+            padding: 20px 30px;
+            border-radius: 15px;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.7), 0 0 40px rgba(255, 0, 255, 0.5);
+            text-align: center;
+            width: 800px;
+            margin: 20px auto;
+            backdrop-filter: blur(10px);
+            z-index: 1;
+        }
+
+        h1 {
+            color: #ff00ff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(255, 0, 255, 0.9), 0 0 25px rgba(255, 0, 255, 0.6);
+        }
+
+        label {
+            font-size: 17px;
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+        }
+
+        textarea {
+            width: 90%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #00ffff;
+            border-radius: 5px;
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #ff00ff;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.7);
+        }
+
+        button {
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff);
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.8);
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            background-size: 200% 100%;
+            animation: buttonGlow 3s ease infinite;
+        }
+
+        button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.9);
+        }
+
+        @keyframes buttonGlow {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 200% 50%;
+            }
+        }
+
+        h2 {
+            margin-top: 20px;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        #result.safe {
+            color: #00ff00;
+            text-shadow: 0 0 12px rgba(0, 255, 0, 0.8);
+        }
+
+        #result.spam {
+            color: #ff0000;
+            text-shadow: 0 0 12px rgba(255, 0, 0, 0.8);
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="particles"></canvas>
+    <div class="container">
+        <h1>Email Spam Detection</h1>
+        <form id="spamForm">
+            <label for="message">Enter your message:</label><br>
+            <textarea id="message" name="message" rows="4" cols="50"  required placeholder="Type/paste your mail "></textarea><br><br>
+            <button type="submit">Check</button>
+        </form>
+        <h2 id="result"></h2>
+    </div>
+
+    <script>
+     // Form submission with auto-clear result and text area after 5 seconds
+        document.getElementById('spamForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = document.getElementById('message').value;
+
+            try {
+                const response = await fetch('http://172.16.205.131:5000/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+
+                const result = await response.json();
+                const resultElement = document.getElementById('result');
+                if (response.ok) {
+                    if (result.prediction === 'spam') {
+                        resultElement.innerText = 'This email is classified as SPAM.';
+                        resultElement.className = 'spam';
+                    } else {
+                        resultElement.innerText = 'This email is classified as SAFE.';
+                        resultElement.className = 'safe';
+                    }
+                } else {
+                    resultElement.innerText = `Error: ${result.error}`;
+                    resultElement.className = '';
+                }
+
+                // Clear the result and text area after 5 seconds
+                setTimeout(() => {
+                    resultElement.innerText = '';
+                    resultElement.className = '';
+                    document.getElementById('message').value = '';
+                }, 5000); // 5000 milliseconds = 5 seconds
+
+            } catch (error) {
+                console.error('Error:', error);
+                const resultElement = document.getElementById('result');
+                resultElement.innerText = 'An error occurred. Check the console for details.';
+                resultElement.className = '';
+
+                // Clear the error message and text area after 5 seconds
+                setTimeout(() => {
+                    resultElement.innerText = '';
+                    resultElement.className = '';
+                    document.getElementById('message').value = '';
+                }, 5000); // 5000 milliseconds = 5 seconds
+            }
+        });
+
+
+
+         // Parallax Particles Effect
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas size
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Resize canvas on window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Particle class
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.depth = Math.random() * 0.8 + 0.2; // Depth for parallax (0.2 to 1)
+                this.color = `hsl(${Math.random() * 60 + 300}, 100%, 70%)`; // Neon pink/cyan hues
+            }
+
+            update(mouseX, mouseY) {
+                // Move particles
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // Parallax effect based on mouse position
+                const dx = (mouseX / canvas.width - 0.5) * 30 * this.depth;
+                const dy = (mouseY / canvas.height - 0.5) * 30 * this.depth;
+                this.x += dx * 0.02;
+                this.y += dy * 0.02;
+
+                // Wrap particles around edges
+                if (this.x < 0) this.x += canvas.width;
+                if (this.x > canvas.width) this.x -= canvas.width;
+                if (this.y < 0) this.y += canvas.height;
+                if (this.y > canvas.height) this.y -= canvas.height;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        // Create particles
+        const particlesArray = [];
+        const particleCount = 100;
+        for (let i = 0; i < particleCount; i++) {
+            particlesArray.push(new Particle());
+        }
+
+        // Mouse position
+        let mouseX = canvas.width / 2;
+        let mouseY = canvas.height / 2;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // Animation loop
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particlesArray.forEach(particle => {
+                particle.update(mouseX, mouseY);
+                particle.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+
+
+        document.getElementById('spamForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = document.getElementById('message').value;
+
+            try {
+                const response = await fetch('http://172.16.205.131:5000/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+
+                const result = await response.json();
+                const resultElement = document.getElementById('result');
+                if (response.ok) {
+                    if (result.prediction === 'spam') {
+                        resultElement.innerText = 'This email is classified as SPAM.';
+                        resultElement.className = 'spam';
+                    } else {
+                        resultElement.innerText = 'This email is classified as SAFE.';
+                        resultElement.className = 'safe';
+                    }
+                } else {
+                    resultElement.innerText = `Error: ${result.error}`;
+                    resultElement.className = '';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerText = 'An error occurred. Check the console for details.';
+            }
+        });
+
+        // Fetch and display all emails
+        async function fetchEmails() {
+            try {
+                const response = await fetch('http://172.16.205.131:5000/emails');
+                const emails = await response.json();
+
+                const tableBody = document.getElementById('emailsTable').querySelector('tbody');
+                tableBody.innerHTML = ''; // Clear existing rows
+
+                emails.forEach(email => {
+                    const row = document.createElement('tr');
+                    row.className = email.label === 'spam' ? 'spam' : 'safe';
+
+                    const labelCell = document.createElement('td');
+                    labelCell.textContent = email.label;
+
+                    const messageCell = document.createElement('td');
+                    messageCell.textContent = email.text;
+
+                    row.appendChild(labelCell);
+                    row.appendChild(messageCell);
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching emails:', error);
+            }
+        }
+
+        // Load emails on page load
+        window.onload = fetchEmails;
+    </script>
+</body>
+
+</html>
