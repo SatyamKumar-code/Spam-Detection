@@ -23,7 +23,7 @@ A web application for detecting whether an email message is spam or safe using a
 
 1. **Clone the repository**  
    ```
-   git clone https://github.com/Saurabhtbj1201/email-spam-detection
+   git clone https://github.com/SatyamKumar-code/Spam-Detection.git
    cd email_spam_detection
    ```
 
