@@ -16,15 +16,15 @@ A web application for detecting whether an email message is spam or safe using a
 
 ## Live Demo
 
-- **Frontend:** [https://ems-bice-rho.vercel.app/](https://ems-bice-rho.vercel.app/)
-- **Backend API:** [https://esd-z761.onrender.com/](https://esd-z761.onrender.com/)
+- **Frontend:** [https://ems-bice-rho.vercel.app/](https://spam-detection-ruby.vercel.app)
+- **Backend API:** [https://esd-z761.onrender.com/](https://esd-z761.onrender.com)
 
 ## Setup (Local Development)
 
 1. **Clone the repository**  
    ```
    git clone https://github.com/SatyamKumar-code/Spam-Detection.git
-   cd email_spam_detection
+   cd Spam-Detection
    ```
 
 2. **Install dependencies**  
